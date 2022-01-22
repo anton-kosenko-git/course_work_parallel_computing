@@ -20,6 +20,7 @@ public class ConcurrentIndexing {
     public static void main(String[] args) {
         int V = 5;
         int numCores = Runtime.getRuntime().availableProcessors();
+        //we define all the machines cores except one for work of the ThreadPoolExecutor
         ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(Math.max(numCores - 1, 1));
         ExecutorCompletionService<Document> completionService = new ExecutorCompletionService(executor);
         ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> invertedIndex = new ConcurrentHashMap<String, ConcurrentLinkedDeque<String>>();
@@ -29,6 +30,7 @@ public class ConcurrentIndexing {
         File source = new File("data");
         File[] files = source.listFiles();
 
+        //InvertedIndexTask objects processed in two independent Threads by the last machine core
         InvertedIndexTask invertedIndexTask = new InvertedIndexTask(completionService, invertedIndex);
         Thread thread1 = new Thread(invertedIndexTask);
         thread1.start();

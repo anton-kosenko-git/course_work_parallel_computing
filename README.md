@@ -23,3 +23,9 @@ We need to select 250 files from 1-4 directories, and 1000 files from directory 
 In each directory, the files are indexed in ascending order.
 Initial index according to the variant: N / 50 * (5 - 1)
 Final index according to the variant: N / 50 * 5
+
+LAUNCHING THE APP
+
+There are two files for starting program:
+1) ConcurrentIndexing.java - to launch the program in concurrent mode with one document per task;
+2) MultipleConcurrentIndexing.java - to launch the program in concurrent mode with optional NUMBER_PER_TASK of documents per task.

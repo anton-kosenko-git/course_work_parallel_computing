@@ -24,8 +24,12 @@ public class MultipleConcurrentIndexing {
 
         Date start, end;
 
-        File source = new File("data");
-        File[] files = source.listFiles();
+        FilesSet filesSet = new FilesSet();
+        filesSet.setFilepath("data\\aclImdb\\");
+
+        ArrayList<File> files = filesSet.getFiles();
+//        File source = new File("data/aclImdb/test/neg");
+//        File[] files = source.listFiles();
 
         //InvertedIndexTask objects processed in two independent Threads by the last machine core
         MultipleInvertedIndexTask invertedIndexTask = new MultipleInvertedIndexTask(completionService, invertedIndex);
@@ -37,13 +41,14 @@ public class MultipleConcurrentIndexing {
 
         start = new Date();
         List<File> taskFiles = new ArrayList<>();
-        File[] indexedFiles = files;
-        int endIndex = files.length/50*V;
+        //File[] indexedFiles = files;
+        //int endIndex = files.length/50*V;
 
         //!!!think about refactoring: implementation of directory traversal
         // possible solution - Files.walkFileTree()
-        for(int index = files.length/50*(V-1); index < endIndex; ++index) {
-            File file = indexedFiles[index];
+        //for(int index = files.length/50*(V-1); index < endIndex; ++index) {
+        //    File file = indexedFiles[index];
+        for(File file : files) {
             //creation IndexingTask object for every file and
             // send it to the CompletionService using submit()
             taskFiles.add(file);
@@ -81,6 +86,6 @@ public class MultipleConcurrentIndexing {
         end = new Date();
         System.out.println("Execution Time: " + (end.getTime() - start.getTime()));
         System.out.println("invertedIndex: " + invertedIndex.size());
-        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")));
+        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")).size());
     }
 }

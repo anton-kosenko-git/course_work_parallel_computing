@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,8 +22,12 @@ public class ConcurrentIndexing {
 
         Date start, end;
 
-        File source = new File("data");
-        File[] files = source.listFiles();
+        FilesSet filesSet = new FilesSet();
+        filesSet.setFilepath("data\\aclImdb\\");
+
+        ArrayList<File> files = filesSet.getFiles();
+        //File source = new File("data/aclImdb/test/neg");
+        //File[] files = source.listFiles();
 
         //InvertedIndexTask objects processed in two independent Threads by the last machine core
         InvertedIndexTask invertedIndexTask = new InvertedIndexTask(completionService, invertedIndex);
@@ -33,15 +38,16 @@ public class ConcurrentIndexing {
         thread2.start();
 
         start = new Date();
-        File[] indexedFiles = files;
-        int endIndex = files.length/50*V;
+        //File[] indexedFiles = files;
+        //int endIndex = files.length/50*V;
 
         //!!!think about refactoring: implementation of directory traversal
         // possible solution - Files.walkFileTree()
-        for(int index = files.length/50*(V-1); index < endIndex; ++index) {
-            File file = indexedFiles[index];
+        //for(int index = files.length/50*(V-1); index < endIndex; ++index) {
+        //    File file = indexedFiles[index];
             //creation IndexingTask object for every file and
             // send it to the CompletionService using submit()
+        for(File file : files) {
             IndexingTask task = new IndexingTask(file);
             completionService.submit(task);
             if(executor.getQueue().size()>1000){
@@ -68,6 +74,6 @@ public class ConcurrentIndexing {
         end = new Date();
         System.out.println("Execution Time: " + (end.getTime() - start.getTime()));
         System.out.println("invertedIndex: " + invertedIndex.size());
-        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")));
+        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")).size());
     }
 }

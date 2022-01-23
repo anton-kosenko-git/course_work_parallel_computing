@@ -13,7 +13,7 @@ public class ConcurrentIndexing {
     }
 
     public static void main(String[] args) {
-        int V = 5;
+        String findWord = "book";
         int numCores = Runtime.getRuntime().availableProcessors();
         //we define all the machines cores except one for work of the ThreadPoolExecutor
         ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(Math.max(numCores - 1, 1));
@@ -26,9 +26,6 @@ public class ConcurrentIndexing {
         filesSet.setFilepath("data\\aclImdb\\");
 
         ArrayList<File> files = filesSet.getFiles();
-        //File source = new File("data/aclImdb/test/neg");
-        //File[] files = source.listFiles();
-
         //InvertedIndexTask objects processed in two independent Threads by the last machine core
         InvertedIndexTask invertedIndexTask = new InvertedIndexTask(completionService, invertedIndex);
         Thread thread1 = new Thread(invertedIndexTask);
@@ -38,15 +35,8 @@ public class ConcurrentIndexing {
         thread2.start();
 
         start = new Date();
-        //File[] indexedFiles = files;
-        //int endIndex = files.length/50*V;
-
-        //!!!think about refactoring: implementation of directory traversal
-        // possible solution - Files.walkFileTree()
-        //for(int index = files.length/50*(V-1); index < endIndex; ++index) {
-        //    File file = indexedFiles[index];
-            //creation IndexingTask object for every file and
-            // send it to the CompletionService using submit()
+        //creation IndexingTask object for every file and
+        // send it to the CompletionService using submit()
         for(File file : files) {
             IndexingTask task = new IndexingTask(file);
             completionService.submit(task);
@@ -74,6 +64,6 @@ public class ConcurrentIndexing {
         end = new Date();
         System.out.println("Execution Time: " + (end.getTime() - start.getTime()));
         System.out.println("invertedIndex: " + invertedIndex.size());
-        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")).size());
+        System.out.println("Number of documents where the word was found: " + ((ConcurrentLinkedDeque)invertedIndex.get(findWord)).size());
     }
 }

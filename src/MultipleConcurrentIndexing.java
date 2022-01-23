@@ -14,13 +14,13 @@ public class MultipleConcurrentIndexing {
     }
 
     public static void main(String[] args) {
-        int V = 5;
+        int NUMBER_PER_TASK = 10;
+        String findWord = "book";
         int numCores = Runtime.getRuntime().availableProcessors();
         //we define all the machines cores except one for work of the ThreadPoolExecutor
         ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(Math.max(numCores - 1, 1));
         ExecutorCompletionService<List<Document>> completionService = new ExecutorCompletionService(executor);
         ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> invertedIndex = new ConcurrentHashMap<String, ConcurrentLinkedDeque<String>>();
-        boolean NUMBER_OF_DOCUMENTS = true;
 
         Date start, end;
 
@@ -28,8 +28,6 @@ public class MultipleConcurrentIndexing {
         filesSet.setFilepath("data\\aclImdb\\");
 
         ArrayList<File> files = filesSet.getFiles();
-//        File source = new File("data/aclImdb/test/neg");
-//        File[] files = source.listFiles();
 
         //InvertedIndexTask objects processed in two independent Threads by the last machine core
         MultipleInvertedIndexTask invertedIndexTask = new MultipleInvertedIndexTask(completionService, invertedIndex);
@@ -41,18 +39,11 @@ public class MultipleConcurrentIndexing {
 
         start = new Date();
         List<File> taskFiles = new ArrayList<>();
-        //File[] indexedFiles = files;
-        //int endIndex = files.length/50*V;
-
-        //!!!think about refactoring: implementation of directory traversal
-        // possible solution - Files.walkFileTree()
-        //for(int index = files.length/50*(V-1); index < endIndex; ++index) {
-        //    File file = indexedFiles[index];
         for(File file : files) {
             //creation IndexingTask object for every file and
             // send it to the CompletionService using submit()
             taskFiles.add(file);
-            if (taskFiles.size() == 50) {
+            if (taskFiles.size() > NUMBER_PER_TASK) {
                 MultipleIndexingTask task = new MultipleIndexingTask(taskFiles);
                 completionService.submit(task);
                 taskFiles = new ArrayList<>();
@@ -84,8 +75,9 @@ public class MultipleConcurrentIndexing {
             e.printStackTrace();
         }
         end = new Date();
+        System.out.println("Number of documents per task: " + NUMBER_PER_TASK);
         System.out.println("Execution Time: " + (end.getTime() - start.getTime()));
         System.out.println("invertedIndex: " + invertedIndex.size());
-        System.out.println(((ConcurrentLinkedDeque)invertedIndex.get("book")).size());
+        System.out.println("Number of documents where the word was found: " + ((ConcurrentLinkedDeque)invertedIndex.get(findWord)).size());
     }
 }

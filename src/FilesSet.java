@@ -14,7 +14,7 @@ public class FilesSet {
     private static ArrayList<File> folders = new ArrayList<>();
 
     private static void readFiles(File[] folders, int n, int variant) {
-        for (int FileBeginWith = n / 50 * variant; FileBeginWith < n / 50 * (variant + 1); FileBeginWith++) {
+        for (int FileBeginWith = n / 50 * (variant - 1); FileBeginWith < n / 50 * variant; FileBeginWith++) {
             for (File file : folders) {
                 if (file.getName().startsWith(String.valueOf(FileBeginWith))) {
                     files.add(file.getAbsoluteFile());

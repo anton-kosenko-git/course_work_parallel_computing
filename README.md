@@ -26,6 +26,7 @@ Final index according to the variant: N / 50 * 5
 
 LAUNCHING THE APP
 
-There are two files for starting program:
-1) ConcurrentIndexing.java - to launch the program in concurrent mode with one document per task;
-2) MultipleConcurrentIndexing.java - to launch the program in concurrent mode with optional NUMBER_PER_TASK of documents per task.
+There are three files for starting program:
+1) SerialIndexing.java - to launch the program in a serial mode;
+2) ConcurrentIndexing.java - to launch the program in concurrent mode with one document per task;
+3) MultipleConcurrentIndexing.java - to launch the program in concurrent mode with optional NUMBER_PER_TASK of documents per task.
